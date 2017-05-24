@@ -19,7 +19,8 @@ var produceCmd = &cobra.Command{
 	Short:   "Publishes a message",
 	Long: `Publish a message using exchange and routing key.
 mesage can be string or stdin:
-  echo 'hello world' | amqptools publish --exchange=logs --key=info
+
+	echo 'hello world' | amqptools publish --exchange=logs --key=info
 
 `,
 	Example: `  ampqtools publish -H ampq.example.com -P 5672 --exchange=amq.direct --key=hello "hello world"
@@ -55,7 +56,15 @@ mesage can be string or stdin:
 			return fmt.Errorf("channel.open: %v", err)
 		}
 		if exchange != "" {
-			if err = ch.ExchangeDeclare(exchange, exchangeType, durableExchange, false, false, false, nil); err != nil {
+			if err = ch.ExchangeDeclare(
+				exchange,        // name
+				exchangeType,    // type
+				durableExchange, // durable
+				false,           // auto-delete
+				false,           // internal
+				false,           // no-wait
+				nil,             // args
+			); err != nil {
 				return fmt.Errorf("exchange.declare: %v", err)
 			}
 		}
@@ -80,7 +89,13 @@ mesage can be string or stdin:
 		returns := ch.NotifyReturn(make(chan amqp.Return, 1))
 		confirms := ch.NotifyPublish(make(chan amqp.Confirmation, 1))
 
-		if err = ch.Publish(exchange, routingkey, true, false, msg); err != nil {
+		if err = ch.Publish(
+			exchange,   // exchange
+			routingkey, // routing-key
+			true,       // mandatory
+			false,      // immediate
+			msg,        // message
+		); err != nil {
 			return fmt.Errorf("basic.publish: %v", err)
 		}
 		select {

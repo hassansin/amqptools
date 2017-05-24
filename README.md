@@ -1,22 +1,12 @@
-## amqptools
+# amqptools
 
-A brief description of your application
-
-### Synopsis
-
-
-A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-### Options
+## Installing
 
 ```
-  -h, --help   help for amqptools
+go get -u github.com/hassansin/amqptools
 ```
 
-### SEE ALSO
-* [amqptools consume](#amqptools-consume)	 - Consumes messages
-* [amqptools publish](#amqptools-publish)	 - Publishes a message
+## Usage 
 
 ## amqptools consume
 
@@ -28,7 +18,8 @@ Consumes messages
 Consume messages
 Uses the default exchange '', When no exchange is provided
 Use comma-separated values for binding the same queue with multiple routing keys:
-  amqptools consume --exchange logs --keys info,warning,debug
+
+	amqptools consume --exchange logs --keys info,warning,debug
 	
 	
 
@@ -64,9 +55,6 @@ amqptools consume [flags]
   -h, --help              help for consume
 ```
 
-### SEE ALSO
-* [amqptools](#amqptools)	 - A brief description of your application
-
 ## amqptools publish
 
 Publishes a message
@@ -76,7 +64,8 @@ Publishes a message
 
 Publish a message using exchange and routing key.
 mesage can be string or stdin:
-  echo 'hello world' | amqptools publish --exchange=logs --key=info
+
+	echo 'hello world' | amqptools publish --exchange=logs --key=info
 
 
 
@@ -108,7 +97,4 @@ amqptools publish [flags] [message]
       --headers string      message headers, key:value format
   -h, --help                help for publish
 ```
-
-### SEE ALSO
-* [amqptools](#amqptools)	 - A brief description of your application
 

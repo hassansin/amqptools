@@ -18,7 +18,8 @@ var consumeCmd = &cobra.Command{
 	Long: `Consume messages
 Uses the default exchange '', When no exchange is provided
 Use comma-separated values for binding the same queue with multiple routing keys:
-  amqptools consume --exchange logs --keys info,warning,debug
+
+	amqptools consume --exchange logs --keys info,warning,debug
 	
 	`,
 	Example: `  ampqtool consume -H ampq.example.com -P 5672 --exchange amq.direct --durable-queue
@@ -49,18 +50,39 @@ Use comma-separated values for binding the same queue with multiple routing keys
 		}
 		closes := ch.NotifyClose(make(chan *amqp.Error, 1))
 
-		q, err := ch.QueueDeclare(queue, durableQueue, false, exclusive, false, nil)
+		q, err := ch.QueueDeclare(
+			queue,        // queue
+			durableQueue, // durable
+			false,        // auto-delete
+			exclusive,    // exclusive
+			false,        // no-wait
+			nil,          // args
+		)
 		if err != nil {
 			return fmt.Errorf("queue.declare: %v", err)
 		}
 		// bind queue for non-default exchange
 		if exchange != "" {
-			if err = ch.ExchangeDeclare(exchange, exchangeType, durableExchange, false, false, false, nil); err != nil {
+			if err = ch.ExchangeDeclare(
+				exchange,        // name
+				exchangeType,    // type
+				durableExchange, // durable
+				false,           // auto-delete
+				false,           // internal
+				false,           // no-wait
+				nil,             // args
+			); err != nil {
 				return fmt.Errorf("exchange.declare: %v", err)
 			}
 			// bind the queue to all routingkeys
 			for _, key := range strings.Split(routingkey, ",") {
-				if err = ch.QueueBind(queue, key, exchange, false, nil); err != nil {
+				if err = ch.QueueBind(
+					queue,    // queue
+					key,      // routing-key
+					exchange, //exchange
+					false,    // no-wait
+					nil,      // args
+				); err != nil {
 					return fmt.Errorf("queue.bind: %v", err)
 				}
 			}
@@ -70,11 +92,23 @@ Use comma-separated values for binding the same queue with multiple routing keys
 		if number > 0 {
 			prefetchCount = number
 		}
-		if err = ch.Qos(prefetchCount, 0, false); err != nil {
+		if err = ch.Qos(
+			prefetchCount, // prefetch count
+			0,             // prefetch size
+			false,         // global
+		); err != nil {
 			return fmt.Errorf("basic.qos: %v", err)
 		}
 
-		msgs, err := ch.Consume(queue, "", !noAck, exclusive, false, false, nil)
+		msgs, err := ch.Consume(
+			queue,     // queue
+			"",        // consumer id
+			!noAck,    // auto-ack
+			exclusive, // exclusive
+			false,     // no-local
+			false,     // no-wait
+			nil,       // args
+		)
 		if err != nil {
 			return fmt.Errorf("basic.consume: %v", err)
 		}

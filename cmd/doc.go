@@ -24,11 +24,6 @@ var docCmd = &cobra.Command{
 		cmd.SilenceUsage = true
 		cmd.SilenceErrors = true
 
-		rootDoc := new(bytes.Buffer)
-		if err := doc.GenMarkdownCustom(RootCmd, rootDoc, linkHandler); err != nil {
-			return err
-		}
-
 		consumeDoc := new(bytes.Buffer)
 		if err := doc.GenMarkdownCustom(consumeCmd, consumeDoc, linkHandler); err != nil {
 			return err
@@ -44,9 +39,21 @@ var docCmd = &cobra.Command{
 			return err
 		}
 		defer f.Close()
-		if _, err = f.Write(rootDoc.Bytes()); err != nil {
+
+		if _, err = f.WriteString(`# amqptools
+
+## Installing
+
+` + "```" + `
+go get -u github.com/hassansin/amqptools
+` + "```" + `
+
+## Usage 
+
+`); err != nil {
 			return err
 		}
+
 		if _, err = f.Write(consumeDoc.Bytes()); err != nil {
 			return err
 		}

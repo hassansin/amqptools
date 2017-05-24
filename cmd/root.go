@@ -83,9 +83,7 @@ var properties = table{amqp.Table{}, true}
 var RootCmd = &cobra.Command{
 	Use:               "amqptools",
 	DisableAutoGenTag: true,
-	Short:             "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:`,
+	Short:             "Consume or publish messages",
 }
 
 func commonFlagSet() *pflag.FlagSet {
