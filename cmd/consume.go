@@ -1,0 +1,114 @@
+package cmd
+
+import (
+	"errors"
+	"fmt"
+	"strconv"
+	"strings"
+
+	"github.com/spf13/cobra"
+	"github.com/streadway/amqp"
+)
+
+// consumeCmd represents the consume command
+var consumeCmd = &cobra.Command{
+	Use:     "consume [flags]",
+	Aliases: []string{"receive"},
+	Short:   "Consumes messages",
+	Long: `Consume messages
+Uses the default exchange '', When no exchange is provided
+Use comma-separated values for binding the same queue with multiple routing keys:
+  amqptools consume --exchange logs --keys info,warning,debug
+	
+	`,
+	Example: `  ampqtool consume -H ampq.example.com -P 5672 --exchange amq.direct --durable-queue
+`,
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) > 0 {
+			return errors.New("unknown arg: " + args[0])
+		}
+		return nil
+	},
+	RunE: func(cmd *cobra.Command, args []string) error {
+		cmd.SilenceUsage = true
+		cmd.SilenceErrors = true
+
+		args = append(args, "", "")
+
+		// Dial amqp server
+		uri := "amqp://" + username + ":" + password + "@" + host + ":" + strconv.Itoa(port) + vhost
+		conn, err := amqp.Dial(uri)
+		if err != nil {
+			return fmt.Errorf("connection.open: %v", err)
+		}
+		defer conn.Close()
+
+		ch, err := conn.Channel()
+		if err != nil {
+			return fmt.Errorf("channel.open: %v", err)
+		}
+		closes := ch.NotifyClose(make(chan *amqp.Error, 1))
+
+		q, err := ch.QueueDeclare(queue, durableQueue, false, exclusive, false, nil)
+		if err != nil {
+			return fmt.Errorf("queue.declare: %v", err)
+		}
+		// bind queue for non-default exchange
+		if exchange != "" {
+			if err = ch.ExchangeDeclare(exchange, exchangeType, durableExchange, false, false, false, nil); err != nil {
+				return fmt.Errorf("exchange.declare: %v", err)
+			}
+			// bind the queue to all routingkeys
+			for _, key := range strings.Split(routingkey, ",") {
+				if err = ch.QueueBind(queue, key, exchange, false, nil); err != nil {
+					return fmt.Errorf("queue.bind: %v", err)
+				}
+			}
+		}
+
+		prefetchCount := 10
+		if number > 0 {
+			prefetchCount = number
+		}
+		if err = ch.Qos(prefetchCount, 0, false); err != nil {
+			return fmt.Errorf("basic.qos: %v", err)
+		}
+
+		msgs, err := ch.Consume(queue, "", !noAck, exclusive, false, false, nil)
+		if err != nil {
+			return fmt.Errorf("basic.consume: %v", err)
+		}
+		count := 0
+
+		go func() {
+			for msg := range msgs {
+				fmt.Printf("Timestamp: %s\n", msg.Timestamp)
+				fmt.Printf("Exchange: %s\n", msg.Exchange)
+				fmt.Printf("RoutingKey: %s\n", msg.RoutingKey)
+				fmt.Printf("Queue: %s\n", q.Name)
+				fmt.Printf("Headers: %v\n", msg.Headers)
+				fmt.Printf("Payload: \n%s\n\n", msg.Body)
+
+				count++
+				if number != 0 && count >= number {
+					ch.Close()
+				}
+			}
+		}()
+		fmt.Println("Waiting for messages. To exit press CTRL+C\n")
+		<-closes
+		return nil
+	},
+}
+
+func init() {
+	RootCmd.AddCommand(consumeCmd)
+	consumeCmd.Flags().AddFlagSet(commonFlagSet())
+	consumeCmd.Flags().StringVarP(&queue, "queue", "q", "", "specify queue (default auto-generated)")
+	consumeCmd.Flags().IntVarP(&number, "number", "n", 0, "retrieve maximum n messages. 0 = forever (default 0)")
+	consumeCmd.Flags().BoolVarP(&passive, "passive", "", false, "passive queue")
+	consumeCmd.Flags().BoolVarP(&exclusive, "exclusive", "", false, "exclusive queue")
+	consumeCmd.Flags().BoolVarP(&durableQueue, "durable-queue", "", false, "durable queue")
+	consumeCmd.Flags().BoolVarP(&noAck, "no-ack", "", false, "don't send ack")
+	consumeCmd.Flags().SortFlags = false
+}
