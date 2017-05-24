@@ -65,7 +65,7 @@ amqptools consume [flags]
 ```
 
 ### SEE ALSO
-* [amqptools](amqptools.md)	 - A brief description of your application
+* [amqptools](#amqptools)	 - A brief description of your application
 
 ## amqptools publish
 
@@ -110,5 +110,5 @@ amqptools publish [flags] [message]
 ```
 
 ### SEE ALSO
-* [amqptools](amqptools.md)	 - A brief description of your application
+* [amqptools](#amqptools)	 - A brief description of your application
 
