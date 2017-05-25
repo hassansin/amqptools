@@ -1,0 +1,17 @@
+vendors:
+- path: github.com/cpuguy83/go-md2man
+  rev: bcc0a711c5e6bbe72c7cb13d81c7109b45267fd2
+- path: github.com/inconshreveable/mousetrap
+  rev: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- path: github.com/russross/blackfriday
+  rev: 0ba0f2b6ed7c475a92e4df8641825cb7a11d1fa3
+- path: github.com/spf13/cobra
+  rev: ca57f0f5dba473a8a58765d16d7e811fb8027add
+- path: github.com/spf13/pflag
+  rev: e57e3eeb33f795204c1ca35f56c44f83227c6e66
+- path: github.com/streadway/amqp
+  rev: dfe15e36048539f4cda41f240b27a5ca25b9cd46
+- path: gopkg.in/check.v1
+  rev: 20d25e2804050c1cd24a7eea1e7a6447dd0e74ec
+- path: gopkg.in/yaml.v2
+  rev: cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b
