@@ -45,6 +45,8 @@ Use comma-separated values for binding the same queue with multiple routing keys
 		if err != nil {
 			return fmt.Errorf("channel.open: %v", err)
 		}
+		defer ch.Close()
+
 		closes := ch.NotifyClose(make(chan *amqp.Error, 1))
 
 		q, err := ch.QueueDeclare(
@@ -129,6 +131,7 @@ Use comma-separated values for binding the same queue with multiple routing keys
 		}()
 		fmt.Printf("Waiting for messages. Queue: %s. To exit press CTRL+C\n\n", q.Name)
 		<-closes
+		fmt.Println("Connection Closed")
 		return nil
 	},
 }

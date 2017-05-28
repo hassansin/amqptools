@@ -55,6 +55,8 @@ mesage can be string or stdin:
 		if err != nil {
 			return fmt.Errorf("channel.open: %v", err)
 		}
+		defer ch.Close()
+
 		if exchange != "" {
 			if err = ch.ExchangeDeclare(
 				exchange,        // name
