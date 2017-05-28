@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -26,15 +25,13 @@ Use comma-separated values for binding the same queue with multiple routing keys
 `,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) > 0 {
-			return errors.New("unknown arg: " + args[0])
+			return fmt.Errorf("unknown arg: %s", args[0])
 		}
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cmd.SilenceUsage = true
 		cmd.SilenceErrors = true
-
-		args = append(args, "", "")
 
 		// Dial amqp server
 		uri := "amqp://" + username + ":" + password + "@" + host + ":" + strconv.Itoa(port) + vhost
@@ -51,12 +48,12 @@ Use comma-separated values for binding the same queue with multiple routing keys
 		closes := ch.NotifyClose(make(chan *amqp.Error, 1))
 
 		q, err := ch.QueueDeclare(
-			queue,        // queue
-			durableQueue, // durable
-			false,        // auto-delete
-			exclusive,    // exclusive
-			false,        // no-wait
-			nil,          // args
+			queue,         // queue
+			durableQueue,  // durable
+			!durableQueue, // auto-delete
+			exclusive,     // exclusive
+			false,         // no-wait
+			nil,           // args
 		)
 		if err != nil {
 			return fmt.Errorf("queue.declare: %v", err)
@@ -120,6 +117,7 @@ Use comma-separated values for binding the same queue with multiple routing keys
 				fmt.Printf("Exchange: %s\n", msg.Exchange)
 				fmt.Printf("RoutingKey: %s\n", msg.RoutingKey)
 				fmt.Printf("Queue: %s\n", q.Name)
+				fmt.Printf("Redelivered: %v\n", msg.Redelivered)
 				fmt.Printf("Headers: %v\n", msg.Headers)
 				fmt.Printf("Payload: \n%s\n\n", msg.Body)
 
@@ -129,7 +127,7 @@ Use comma-separated values for binding the same queue with multiple routing keys
 				}
 			}
 		}()
-		fmt.Println("Waiting for messages. To exit press CTRL+C\n")
+		fmt.Printf("Waiting for messages. Queue: %s. To exit press CTRL+C\n\n", q.Name)
 		<-closes
 		return nil
 	},
