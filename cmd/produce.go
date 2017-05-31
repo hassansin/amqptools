@@ -22,6 +22,8 @@ mesage can be string or stdin:
 
 	echo 'hello world' | amqptools publish --exchange=logs --key=info
 
+To pass headers and properites, use '--headers' & '--properties' any number of times in 'key:value' format
+
 `,
 	Example: `  ampqtools publish -H ampq.example.com -P 5672 --exchange=amq.direct --key=hello "hello world"
   amqptools publish "hello world" --properties="content-type:text/html" --properties="expiration:3000"	

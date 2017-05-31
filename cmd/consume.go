@@ -15,7 +15,8 @@ var consumeCmd = &cobra.Command{
 	Aliases: []string{"receive"},
 	Short:   "Consumes messages",
 	Long: `Consume messages
-Uses the default exchange '', When no exchange is provided
+By default, it runs forever and waits for any new message in thequeue. Pass '--number' to consume certain number of messages and quit
+
 Use comma-separated values for binding the same queue with multiple routing keys:
 
 	amqptools consume --exchange logs --keys info,warning,debug

@@ -16,7 +16,9 @@ Consumes messages
 
 
 Consume messages
-Uses the default exchange '', When no exchange is provided
+
+By default, it runs forever and waits for any new message in thequeue. Pass `--number` to consume certain number of messages and quit
+
 Use comma-separated values for binding the same queue with multiple routing keys:
 
 	amqptools consume --exchange logs --keys info,warning,debug
@@ -61,12 +63,14 @@ Publishes a message
 
 ### Synopsis
 
-
 Publish a message using exchange and routing key.
-mesage can be string or stdin:
+
+If an argument is passed, that is used as message. Otherwise message is read from STDIN
 
 	echo 'hello world' | amqptools publish --exchange=logs --key=info
 
+
+To pass headers and properites, use `--headers` & `--properties` any number of times in `key:value` format
 
 
 ```

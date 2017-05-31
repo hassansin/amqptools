@@ -15,7 +15,6 @@ func linkHandler(name string) string {
 	return "#" + strings.Replace(base, "_", "-", 5)
 }
 
-// consumeCmd represents the consume command
 var docCmd = &cobra.Command{
 	Use:    "doc",
 	Short:  "Generate markdown document",
