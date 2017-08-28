@@ -2,9 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 
+	"github.com/oleiade/reflections"
 	"github.com/spf13/cobra"
 	"github.com/streadway/amqp"
 )
@@ -122,7 +124,15 @@ Use comma-separated values for binding the same queue with multiple routing keys
 				fmt.Printf("Queue: %s\n", q.Name)
 				fmt.Printf("Redelivered: %v\n", msg.Redelivered)
 				fmt.Printf("Headers: %v\n", msg.Headers)
+				fmt.Printf("ConsumerTag: %v\n", msg.ConsumerTag)
 				fmt.Printf("Payload: \n%s\n\n", msg.Body)
+
+				fmt.Println("Properties:")
+				for _, key := range valid_properties {
+					if val, err := reflections.GetField(msg, key); err == nil && val != reflect.Zero(reflect.TypeOf(val)).Interface() {
+						fmt.Printf("%s: %q\n", key, val)
+					}
+				}
 
 				count++
 				if number != 0 && count >= number {

@@ -93,6 +93,7 @@ To pass headers and properites, use '--headers' & '--properties' any number of t
 		returns := ch.NotifyReturn(make(chan amqp.Return, 1))
 		confirms := ch.NotifyPublish(make(chan amqp.Confirmation, 1))
 
+		fmt.Printf("Sending message with Exchange: '%s' and Key: '%s'\n", exchange, routingkey)
 		if err = ch.Publish(
 			exchange,   // exchange
 			routingkey, // routing-key
