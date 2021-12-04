@@ -40,6 +40,12 @@ func getUri() string {
 	var proto string = "amqp://"
 	if (ssl) {
 		proto = "amqps://"
+		// Change the port from amqp default to amqps default.
+		// not sure how to check if -P flag was given by the user
+		// so the perverse situtation where amqps runs on port 5672 would not work sorry
+		if (port == 5672) {
+			port = 5671
+		}
 	}
 	return proto + username + ":" + password + "@" + host + ":" + strconv.Itoa(port) + vhost
 }
