@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"os"
 	"reflect"
-	"strconv"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -46,7 +45,7 @@ To pass headers and properites, use '--headers' & '--properties' any number of t
 			message = string(bytes)
 		}
 
-		uri := "amqp://" + username + ":" + password + "@" + host + ":" + strconv.Itoa(port) + vhost
+		uri := getUri()
 		conn, err := amqp.Dial(uri)
 		if err != nil {
 			return fmt.Errorf("connection.open: %v", err)

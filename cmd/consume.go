@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"reflect"
-	"strconv"
 	"strings"
 
 	"github.com/oleiade/reflections"
@@ -36,8 +35,8 @@ Use comma-separated values for binding the same queue with multiple routing keys
 		cmd.SilenceUsage = true
 		cmd.SilenceErrors = true
 
+		uri := getUri()
 		// Dial amqp server
-		uri := "amqp://" + username + ":" + password + "@" + host + ":" + strconv.Itoa(port) + vhost
 		conn, err := amqp.Dial(uri)
 		if err != nil {
 			return fmt.Errorf("connection.open: %v", err)
