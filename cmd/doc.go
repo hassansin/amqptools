@@ -43,8 +43,12 @@ var docCmd = &cobra.Command{
 
 ## Installing
 
+Download [Precompiled binaries](https://github.com/hassansin/amqptools/releases) for supported operating systems.
+
+or install using go binary:
+
 ` + "```" + `
-go get -u github.com/hassansin/amqptools
+go install github.com/hassansin/amqptools@latest
 ` + "```" + `
 
 ## Usage 
