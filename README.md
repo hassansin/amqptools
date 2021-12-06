@@ -6,9 +6,8 @@ Download [Precompiled binaries](https://github.com/hassansin/amqptools/releases)
 
 or install using go binary:
 
-
 ```
-go get -u github.com/hassansin/amqptools
+go install github.com/hassansin/amqptools@latest
 ```
 
 ## Usage 
@@ -19,10 +18,8 @@ Consumes messages
 
 ### Synopsis
 
-
 Consume messages
-
-By default, it runs forever and waits for any new message in thequeue. Pass `--number` to consume certain number of messages and quit
+By default, it runs forever and waits for any new message in thequeue. Pass '--number' to consume certain number of messages and quit
 
 Use comma-separated values for binding the same queue with multiple routing keys:
 
@@ -49,6 +46,7 @@ amqptools consume [flags]
   -v, --vhost string      specify vhost (default "/")
   -u, --username string   specify username (default "guest")
   -p, --password string   specify password (default "guest")
+  -S, --ssl               use amqps
   -e, --exchange string   exchange name (default "")
   -k, --key string        routing key (default "")
   -t, --type string       exchange type (default "direct")
@@ -62,6 +60,10 @@ amqptools consume [flags]
   -h, --help              help for consume
 ```
 
+### SEE ALSO
+
+* [amqptools](#amqptools)	 - Consume or publish messages
+
 ## amqptools publish
 
 Publishes a message
@@ -69,13 +71,12 @@ Publishes a message
 ### Synopsis
 
 Publish a message using exchange and routing key.
-
-If an argument is passed, that is used as message. Otherwise message is read from STDIN
+mesage can be string or stdin:
 
 	echo 'hello world' | amqptools publish --exchange=logs --key=info
 
+To pass headers and properites, use '--headers' & '--properties' any number of times in 'key:value' format
 
-To pass headers and properites, use `--headers` & `--properties` any number of times in `key:value` format
 
 
 ```
@@ -98,6 +99,7 @@ amqptools publish [flags] [message]
   -v, --vhost string        specify vhost (default "/")
   -u, --username string     specify username (default "guest")
   -p, --password string     specify password (default "guest")
+  -S, --ssl                 use amqps
   -e, --exchange string     exchange name (default "")
   -k, --key string          routing key (default "")
   -t, --type string         exchange type (default "direct")
@@ -106,4 +108,8 @@ amqptools publish [flags] [message]
       --headers string      message headers, key:value format
   -h, --help                help for publish
 ```
+
+### SEE ALSO
+
+* [amqptools](#amqptools)	 - Consume or publish messages
 
