@@ -104,7 +104,7 @@ Use comma-separated values for binding the same queue with multiple routing keys
 		msgs, err := ch.Consume(
 			queue,     // queue
 			"",        // consumer id
-			!noAck,    // auto-ack
+			false,    // auto-ack
 			exclusive, // exclusive
 			false,     // no-local
 			false,     // no-wait
@@ -131,6 +131,10 @@ Use comma-separated values for binding the same queue with multiple routing keys
 					if val, err := reflections.GetField(msg, key); err == nil && val != reflect.Zero(reflect.TypeOf(val)).Interface() {
 						fmt.Printf("%s: %q\n", key, val)
 					}
+				}
+
+				if !noAck {
+					ch.Ack(msg.DeliveryTag, false)
 				}
 
 				count++

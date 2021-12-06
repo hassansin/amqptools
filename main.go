@@ -1,6 +1,6 @@
 package main
 
-import "github.com/hassansin/amqptools/cmd"
+import "github.com/marcinkoziej/amqptools/cmd"
 
 func main() {
 	cmd.Execute()
