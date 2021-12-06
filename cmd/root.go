@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"strconv"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -18,6 +19,7 @@ var (
 	vhost    string
 	username string
 	password string
+    ssl      bool
 
 	// exchange options
 	exchange        string
@@ -33,6 +35,20 @@ var (
 	noAck        bool
 	durableQueue bool
 )
+
+func getUri() string {
+	var proto string = "amqp://"
+	if (ssl) {
+		proto = "amqps://"
+		// Change the port from amqp default to amqps default.
+		// not sure how to check if -P flag was given by the user
+		// so the perverse situtation where amqps runs on port 5672 would not work sorry
+		if (port == 5672) {
+			port = 5671
+		}
+	}
+	return proto + username + ":" + password + "@" + host + ":" + strconv.Itoa(port) + vhost
+}
 
 var valid_properties = map[string]string{
 	"content-type":     "ContentType",
@@ -93,6 +109,7 @@ func commonFlagSet() *pflag.FlagSet {
 	fs.StringVarP(&vhost, "vhost", "v", "/", "specify vhost")
 	fs.StringVarP(&username, "username", "u", "guest", "specify username")
 	fs.StringVarP(&password, "password", "p", "guest", "specify password")
+	fs.BoolVarP(&ssl, "ssl", "S", false, "use amqps")
 
 	fs.StringVarP(&exchange, "exchange", "e", "", `exchange name (default "")`)
 	fs.StringVarP(&routingkey, "key", "k", "", `routing key (default "")`)
